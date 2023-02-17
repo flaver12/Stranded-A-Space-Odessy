@@ -6,18 +6,34 @@ using org.flaver.defintion;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
+using MoonSharp.Interpreter;
 
 namespace org.flaver.model
 {
+    [MoonSharpUserData]
     public class Furniture : IXmlSerializable // Like wals doors and furnitures
     {
-        public Func<Furniture, Enterability> isEnterable;
         public Tile Tile { private set; get; }
         public string ObjectType { private set; get; }
         public bool LinksToNeighbour { private set; get; }
         public Action<Furniture> onChanged;
         public Action<Furniture> onRemoved;
         public Color tint = Color.white;
+        public string Name {
+            get
+            {
+                if (name == null || name.Length == 0)
+                {
+                    return ObjectType;
+                }
+                
+                return name;
+            } 
+            set
+            {
+                name = value;
+            }
+        }
         public float MovementCost {
             get {
                 return movementCost;
@@ -65,13 +81,17 @@ namespace org.flaver.model
         private int height;
         private bool roomEnclosure;
         private Dictionary<string, float> furnParameters;
-        private Action<Furniture, float> tickActions;
+        private string IsEnterableTickAction;
+        private List<string> tickActions;
         private List<Job> jobs;
+        private string name;
 
         public Furniture()
         {
+            tickActions = new List<string>();
             furnParameters = new Dictionary<string, float>();
             jobs = new List<Job>();
+            this.funcPositionValidation = this.DEFAULT___IsValidPosition;
         }
 
         protected Furniture(Furniture toCopy) // copy constrcutor
@@ -87,10 +107,12 @@ namespace org.flaver.model
             jobs = new List<Job>();
             jobSpotOffset = toCopy.jobSpotOffset;
             jobSpawnSpotOffset = toCopy.jobSpawnSpotOffset;
+            Name = toCopy.Name;
+            IsEnterableTickAction = toCopy.IsEnterableTickAction;
 
             if (toCopy.tickActions != null)
             {
-                tickActions = (Action<Furniture, float>)toCopy.tickActions.Clone();
+                tickActions = new List<string>(toCopy.tickActions);
             }
 
             if (toCopy.funcPositionValidation != null)
@@ -98,11 +120,9 @@ namespace org.flaver.model
                 this.funcPositionValidation = (Func<Tile, bool>)toCopy.funcPositionValidation.Clone();
             }
 
-            this.isEnterable = toCopy.isEnterable;
-
         }
 
-        public Furniture (string objectType, float movementCost = 2f, int width = 1, int height = 1, bool linksToNeighbour = false, bool roomEnclosure = false)
+        /*public Furniture (string objectType, float movementCost = 2f, int width = 1, int height = 1, bool linksToNeighbour = false, bool roomEnclosure = false)
         {
             ObjectType = objectType;
             this.movementCost = movementCost;
@@ -113,7 +133,7 @@ namespace org.flaver.model
 
             this.furnParameters = new Dictionary<string, float>();
             this.funcPositionValidation = this.DEFAULT___IsValidPosition;
-        }
+        }*/
 
         public static Furniture PlacePrototype(Furniture prototype, Tile tile)
         {
@@ -168,7 +188,8 @@ namespace org.flaver.model
         {
             if (tickActions != null)
             {
-                tickActions(this, deltaTime);
+                //tickActions(this, deltaTime);
+                FurnitureActions.CallFunctionsWithFurnitures(tickActions.ToArray(), this, deltaTime);
             }
         }
 
@@ -198,8 +219,94 @@ namespace org.flaver.model
                 writer.WriteEndElement();
             }
         }
+        
+        public void ReadXmlPrototype(XmlReader parentReader)
+        {
+            Debug.Log("ReadXmlPrototype");
+            
+            ObjectType = parentReader.GetAttribute("objectType");
+
+            XmlReader reader = parentReader.ReadSubtree();
+            while(reader.Read())
+            {
+                switch(reader.Name)
+                {
+                    case "Name":
+                        reader.Read();
+                        Name = reader.ReadContentAsString();
+                        break;
+                    case "MovementCost":
+                        reader.Read();
+                        movementCost = reader.ReadContentAsFloat();
+                        break;
+                    case "Width":
+                        reader.Read();
+                        width = reader.ReadContentAsInt();
+                        break;
+                    case "Height":
+                        reader.Read();
+                        height = reader.ReadContentAsInt();
+                        break;
+                    case "LinksToNeighbours":
+                        reader.Read();
+                        LinksToNeighbour = reader.ReadContentAsBoolean();
+                        break;
+                    case "EnclosesRooms":
+                        reader.Read();
+                        roomEnclosure = reader.ReadContentAsBoolean();
+                        break;
+                    case "BuildingJob":
+                        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+                        List<Item> items = new List<Item>();
+
+                        XmlReader itemReader = reader.ReadSubtree();
+                        while (itemReader.Read())
+                        {
+                            if (itemReader.Name == "Item")
+                            {
+                                Item item = new Item(
+                                    itemReader.GetAttribute("objectType"),
+                                    int.Parse(itemReader.GetAttribute("amount")),
+                                    0
+                                );
+                                items.Add(item);
+                            }
+                        }
+
+                        Job job = new Job(
+                            null,
+                            ObjectType,
+                            FurnitureActions.JobCompleteFurnitureBuilding,
+                            jobTime,
+                            items.ToArray()
+                        );
+
+                        World.Instance.SetFurnitureJobPrototype(job, this);
+                        break;
+                    case "OnTick":
+                        string functionName = reader.GetAttribute("functionName");
+                        RegisterTickAction(functionName);
+                        break;
+                    case "OnIsEnterable":
+                        IsEnterableTickAction = reader.GetAttribute("functionName");
+                        break;
+                    case "Params":
+                        ReadXmlParams(reader);
+                        break;
+
+                }
+            }
+
+        }
 
         public void ReadXml(XmlReader reader)
+        {
+            // load info
+            // movementCost = float.Parse(reader.GetAttribute("movementCost"));
+            ReadXmlParams(reader);
+        }
+
+        public void ReadXmlParams(XmlReader reader)
         {
             // load info
             // movementCost = float.Parse(reader.GetAttribute("movementCost"));
@@ -222,6 +329,17 @@ namespace org.flaver.model
             }
 
             return furnParameters[key];
+        }
+
+        public Enterability IsEnterable()
+        {
+            if (IsEnterableTickAction == null || IsEnterableTickAction.Length == 0)
+            {
+                return Enterability.Yes;
+            }
+
+            DynValue returnValue = FurnitureActions.CallFunction(IsEnterableTickAction, this);
+            return (Enterability) returnValue.Number;
         }
 
         public Tile GetJobSpotTile()
@@ -277,14 +395,14 @@ namespace org.flaver.model
             furnParameters[key] = value;
         }
 
-        public void RegisterTickAction(Action<Furniture, float> action)
+        public void RegisterTickAction(string luaFunctionName)
         {
-            tickActions += action;
+            tickActions.Add(luaFunctionName);
         }
 
-        public void UnregisterTickAction(Action<Furniture, float> action)
+        public void UnregisterTickAction(string luaFunctionName)
         {
-            tickActions -= action;
+            tickActions.Remove(luaFunctionName);
         }
 
         public void RegisterOnChange(Action<Furniture> callback)

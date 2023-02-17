@@ -117,7 +117,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Wall_
+      name: furn_SteelWall_
       rect:
         serializedVersion: 2
         x: 32
@@ -138,7 +138,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_ES
+      name: furn_SteelWall_ES
       rect:
         serializedVersion: 2
         x: 32
@@ -159,7 +159,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_EW
+      name: furn_SteelWall_EW
       rect:
         serializedVersion: 2
         x: 64
@@ -180,10 +180,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_SW
+      name: furn_SteelWall_SW
       rect:
         serializedVersion: 2
-        x: 95
+        x: 96
         y: 192
         width: 32
         height: 32
@@ -201,7 +201,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_S
+      name: furn_SteelWall_S
       rect:
         serializedVersion: 2
         x: 160
@@ -222,7 +222,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NES
+      name: furn_SteelWall_NES
       rect:
         serializedVersion: 2
         x: 160
@@ -243,7 +243,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_N
+      name: furn_SteelWall_N
       rect:
         serializedVersion: 2
         x: 160
@@ -264,7 +264,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_W
+      name: furn_SteelWall_W
       rect:
         serializedVersion: 2
         x: 192
@@ -285,7 +285,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_E
+      name: furn_SteelWall_E
       rect:
         serializedVersion: 2
         x: 192
@@ -306,7 +306,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NEW
+      name: furn_SteelWall_NEW
       rect:
         serializedVersion: 2
         x: 224
@@ -327,7 +327,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NSW
+      name: furn_SteelWall_NSW
       rect:
         serializedVersion: 2
         x: 288
@@ -348,7 +348,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_ESW
+      name: furn_SteelWall_ESW
       rect:
         serializedVersion: 2
         x: 224
@@ -369,7 +369,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NE
+      name: furn_SteelWall_NE
       rect:
         serializedVersion: 2
         x: 33
@@ -390,7 +390,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NW
+      name: furn_SteelWall_NW
       rect:
         serializedVersion: 2
         x: 96
@@ -411,7 +411,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NESW
+      name: furn_SteelWall_NESW
       rect:
         serializedVersion: 2
         x: 64
@@ -432,7 +432,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Wall_NS
+      name: furn_SteelWall_NS
       rect:
         serializedVersion: 2
         x: 96
@@ -463,30 +463,30 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Wall_NES: -1190532584
-      Wall_E: 857280168
-      Wall_NS: -2090071916
-      Wall_W: 453286066
+      furn_SteelWall_W: 453286066
+      furn_SteelWall_NSW: 1408713430
       Wa: 485381321
-      Wall_NSW: 1408713430
-      Wall_ESW: -2010706914
-      Wall_: 1955995164
+      furn_SteelWall_NEW: -4392261
       Walls_EW: -1405248284
+      furn_SteelWall_E: 857280168
+      furn_SteelWall_NW: 542796301
       Wall_s: -1911319686
-      Wall_S: -1344148196
-      Wall_NEW: -4392261
-      Wall_NW: 542796301
-      Wall_NESW: -732228545
+      furn_SteelWall_ESW: -2010706914
+      furn_SteelWall_EW: 630239154
+      furn_SteelWall_S: -1344148196
       Walls_1: -1475852818
+      furn_SteelWall_SW: -1040332866
       Walls_SE: 1099728039
       Wal: -2133717190
       Walls_ES: -157348677
-      Wall_ES: -225490422
-      Wall_NE: 2105158601
+      furn_SteelWall_ES: -225490422
+      furn_SteelWall_NS: -2090071916
       Wall: -622927621
-      Wall_SW: -1040332866
-      Wall_N: -79513040
-      Wall_EW: 630239154
+      furn_SteelWall_N: -79513040
+      furn_SteelWall_NES: -1190532584
+      furn_SteelWall_NESW: -732228545
+      furn_SteelWall_: 1955995164
+      furn_SteelWall_NE: 2105158601
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

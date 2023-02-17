@@ -3,11 +3,66 @@ using System.Collections.Generic;
 using org.flaver.controller;
 using org.flaver.defintion;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
 namespace org.flaver.model
 {
-    public static class FurnitureActions
-    {
+    public class FurnitureActions
+    {    
+        public static FurnitureActions Instance { get; private set; }
+
+        private Script luaScript;
+        public FurnitureActions(string rawLua)
+        {
+            // Tell Moonsharp load all user data
+            UserData.RegisterAssembly();
+
+            Instance = this;
+            luaScript = new Script();
+            luaScript.DoString(rawLua);
+        }
+        
+
+        public static void CallFunctionsWithFurnitures(string[] functioNames, Furniture furniture, float deltaTime)
+        {
+            foreach (string functionName in functioNames)
+            {
+                DynValue func = Instance.luaScript.Globals.Get(functionName);
+                if (func.Type != DataType.Function)
+                {
+                    Debug.LogError($"CallFunctionsWithFurnitures: {functionName} is not a function!");
+                    return; // TODO do we want a hard return?
+                }
+                DynValue result = Instance.luaScript.Call(func, furniture, deltaTime);
+                
+                if (result.Type == DataType.String)
+                {
+                    Debug.Log(result.String);
+                }
+            }
+        }
+
+        public static DynValue CallFunction(string functionName, params object[] args)
+        {
+            DynValue func = Instance.luaScript.Globals.Get(functionName);
+            if (func.Type != DataType.Function)
+            {
+                Debug.LogError($"CallbackFunction: {functionName} is not a function!");
+                return DynValue.Void; // TODO do we want a hard return?
+            }
+
+            return Instance.luaScript.Call(func, args);
+        }
+
+
+
+        public static void JobCompleteFurnitureBuilding(Job job)
+        {
+            WorldController.Instance.World.PlaceFurniture(job.JobObjectType, job.Tile);
+            job.Tile.PendingFurnitueJob = null;
+        }
+
+        /*
         public static void DoorTickAction(Furniture furniture, float deltaTime)
         {
             // Debug.Log("DoorTickAction");
@@ -101,11 +156,7 @@ namespace org.flaver.model
             return Enterability.Soon;
         }
 
-        public static void JobCompleteFurnitureBuilding(Job job)
-        {
-            WorldController.Instance.World.PlaceFurniture(job.JobObjectType, job.Tile);
-            job.Tile.PendingFurnitueJob = null;
-        }
+       
 
         
         private static void StockpileJobWorked(Job job)
@@ -178,7 +229,7 @@ namespace org.flaver.model
             Item item = new Item("Steel Plate", 50, 10);
             World.Instance.itemManager.InstallItem(job.furniture.GetSpawnSpotTile(), item);
         }
-
-    }   
+        */
+    }
 }
 

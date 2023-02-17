@@ -20,10 +20,12 @@ namespace org.flaver.ui
             // Add a button for each type of furniture
             foreach (string furnitureKey in World.Instance.FurniturePrototypes.Keys)
             {
+                string objectName = World.Instance.FurniturePrototypes[furnitureKey].Name;
+
                 GameObject go = Instantiate(buildFurniturePrefab);
                 go.transform.SetParent(this.transform);
                 go.name = "Button - Build " + furnitureKey;
-                go.GetComponentInChildren<TMP_Text>().text = "Build " + furnitureKey;
+                go.GetComponentInChildren<TMP_Text>().text = "Build " + objectName;
                 
                 Button button = go.GetComponent<Button>(); 
                 button.onClick.AddListener(

@@ -7,6 +7,7 @@ using org.flaver.pathfinding;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
+using System.IO;
 
 namespace org.flaver.model
 {
@@ -144,7 +145,7 @@ namespace org.flaver.model
             }
 
            // Debug only remove later
-            /*Item item = new Item();
+            Item item = new Item();
             item.StackSize = 50;
             itemManager.InstallItem(GetTileByPosition(Width / 2, Height / 2), item);
             if (itemCreated != null)
@@ -167,7 +168,11 @@ namespace org.flaver.model
             {
                 itemCreated(GetTileByPosition(Width / 2 + 1, Height / 2 + 2).Item);
             }
-            */
+        }
+
+        public void SetFurnitureJobPrototype(Job job, Furniture furniture)
+        {
+            furnitureJobPrototypes[furniture.ObjectType] = job;
         }
 
         public Room GetOutsideRoom()
@@ -268,7 +273,7 @@ namespace org.flaver.model
                     {
                         if (x != (l + 9) && y != (b + 4))
                         {
-                            PlaceFurniture("Wall", tiles[x,y]);
+                            PlaceFurniture("furn_SteelWall", tiles[x,y]);
                         }
                     }
                 }
@@ -514,20 +519,75 @@ namespace org.flaver.model
             InvalidateTileGraph();
         }
 
+        private void LoadFurnitureLua()
+        {
+            string filePath = Path.Combine(Application.streamingAssetsPath, "Lua", "Furniture.lua");
+            string furnitureLuaRaw = File.ReadAllText(filePath);
+
+            Debug.Log($"LoadFurnitureLua: Loaded this code: {furnitureLuaRaw}");
+            FurnitureActions furnitureActions = new FurnitureActions(furnitureLuaRaw);
+        }
+
+        private void CreateFurniturePrototypes()
+        {
+            LoadFurnitureLua();
+
+            furniturePrototypes = new Dictionary<string, Furniture>();
+            furnitureJobPrototypes = new Dictionary<string, Job>();
+
+            // TODO passed raw text/BufferStream etc.
+            string filePath = Path.Combine(Application.streamingAssetsPath, "Data", "Furniture.xml");
+            string furnitureXmlRaw = File.ReadAllText(filePath);
+
+            XmlTextReader reader = new XmlTextReader( new StringReader(furnitureXmlRaw));
+            
+            int furnitureCount = 0;
+            if (reader.ReadToDescendant("Furnitures"))
+            {
+                if(reader.ReadToDescendant("Furniture"))
+                {
+                    do
+                    {
+                       furnitureCount ++;
+                       Furniture furniture = new Furniture();
+                       furniture.ReadXmlPrototype(reader);
+
+                       furniturePrototypes[furniture.ObjectType] = furniture;
+                    } while (reader.ReadToNextSibling("Furniture"));
+                }
+                else
+                {
+                    Debug.LogError("CreateFurniturePrototypes: Did not find a Furniture defintion");
+                }
+               
+            }
+            else
+            {
+                Debug.LogError("CreateFurniturePrototypes: Did not find a Furnitures defintion");
+            }
+            Debug.Log($"CreateFurniturePrototypes: Loaded {furnitureCount} furnitures");
+
+            // This bit will come from a lua file
+//            furniturePrototypes["Door"].RegisterTickAction(FurnitureActions.DoorTickAction);
+//            furniturePrototypes["Door"].isEnterable = FurnitureActions.IsDoorEnterable;
+            // Read furnitures prototype xml
+        }
+/*
         private void CreateFurniturePrototypes()
         {
             furniturePrototypes = new Dictionary<string, Furniture>();
             furnitureJobPrototypes = new Dictionary<string, Job>();
 
             Furniture wallPrototype = new Furniture(
-                "Wall",
+                "furn_SteelWall",
                 0, // not passable
                 1, // width
                 1, // height
                 true, // links to neighbours
                 true // Enclose rooms
             );
-            Job wallPrototypeJob = new Job(null, "Wall", FurnitureActions.JobCompleteFurnitureBuilding, 1f, new Item[]{ new Item("Steel Plate", 5, 0) });
+            Job wallPrototypeJob = new Job(null, "furn_SteelWall", FurnitureActions.JobCompleteFurnitureBuilding, 1f, new Item[]{ new Item("Steel Plate", 5, 0) });
+            wallPrototype.Name = "Basic Wall";
 
             Furniture doorPrototype = new Furniture(
                 "Door",
@@ -576,8 +636,8 @@ namespace org.flaver.model
             miningDroneStationPrototype.RegisterTickAction(FurnitureActions.MiningDroneStationTickAction);
 
             // Register the stuff
-            furniturePrototypes.Add("Wall", wallPrototype);
-            furnitureJobPrototypes.Add("Wall", wallPrototypeJob);
+            furniturePrototypes.Add("furn_SteelWall", wallPrototype);
+            furnitureJobPrototypes.Add("furn_SteelWall", wallPrototypeJob);
 
             furniturePrototypes.Add("Stockpile", stockpilePrototype);
             furnitureJobPrototypes.Add("Stockpile", stockPilePrototypeJob);
@@ -588,7 +648,7 @@ namespace org.flaver.model
 
             furniturePrototypes.Add("Mining Drone Station", miningDroneStationPrototype);
         }
-
+*/
 
     }
 }

@@ -17,7 +17,7 @@ namespace org.flaver.ui
 
             if (tile.Furniture != null)
             {
-                s = $"Furniture Type: {tile.Furniture.ObjectType}";
+                s = $"Furniture Type: {tile.Furniture.Name}";
             }
 
             text.text = s;

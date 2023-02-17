@@ -4,9 +4,11 @@ using System;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
+using MoonSharp.Interpreter;
 
 namespace org.flaver.model
 {
+    [MoonSharpUserData]
     public class Tile : IXmlSerializable
     {
         public TileType Type { 
@@ -109,9 +111,9 @@ namespace org.flaver.model
             }
 
             // Check the furniture what his status
-            if (furniture != null && furniture.isEnterable != null)
+            if (furniture != null)
             {
-                return furniture.isEnterable(furniture);
+                return furniture.IsEnterable();
             }
 
     
