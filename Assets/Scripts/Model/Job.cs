@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using org.flaver.model;
 using UnityEngine;
 using System;
+using System.Linq;
+using MoonSharp.Interpreter;
 
 namespace org.flaver.model
 {
+    [MoonSharpUserData]
     public class Job
     {
         public Tile Tile {
@@ -31,6 +34,8 @@ namespace org.flaver.model
         private Action<Job> jobWorked;
         private bool jobIsRepeating;
         private float jobTimeRequired;
+        private List<string> jobWorkedLuaCallback;
+        private List<string> jobCompletedLuaCallback;
 
         public Job(Tile tile, string jobObjectType, Action<Job> jobCompleted, float jobTime, Item[] itemRequirements, bool jobIsRepeating = false)
         {
@@ -40,6 +45,8 @@ namespace org.flaver.model
             this.jobTimeRequired = this.jobTime = jobTime;
             this.itemRequirements = new Dictionary<string, Item>();
             this.jobIsRepeating = jobIsRepeating;
+            jobWorkedLuaCallback = new List<string>();
+            jobCompletedLuaCallback = new List<string>();
 
             if (itemRequirements != null)
             {
@@ -65,6 +72,8 @@ namespace org.flaver.model
                     this.itemRequirements[item.objectType] = item.Clone();
                 }
             }
+            jobWorkedLuaCallback = new List<string>(toClone.jobWorkedLuaCallback);
+            jobCompletedLuaCallback = new List<string>(toClone.jobCompletedLuaCallback);
         }
 
         public void TickDoWork(float workTime)
@@ -79,6 +88,14 @@ namespace org.flaver.model
                 {
                     jobWorked(this);
                 }
+
+                if (jobWorkedLuaCallback != null)
+                {
+                    foreach (string luaFunction in jobWorkedLuaCallback)
+                    {
+                        FurnitureActions.CallFunction(luaFunction, this);
+                    }
+                }
                 return;
             }
 
@@ -87,11 +104,27 @@ namespace org.flaver.model
                 jobWorked(this);
             }
 
+            if (jobWorkedLuaCallback != null)
+            {
+                foreach (string luaFunction in jobWorkedLuaCallback)
+                {
+                    FurnitureActions.CallFunction(luaFunction, this);
+                }
+            }
+
             if (jobTime <= 0)
             {
                 if (jobCompleted != null)
                 {
                     jobCompleted(this);
+                }
+
+                if (jobCompletedLuaCallback != null)
+                {
+                    foreach (string luaFunction in jobCompletedLuaCallback)
+                    {
+                        FurnitureActions.CallFunction(luaFunction, this);
+                    }
                 }
 
                 if (!jobIsRepeating)
@@ -170,6 +203,11 @@ namespace org.flaver.model
             return new Job(this);
         }
 
+        public Item[] GetItemRequirementValues()
+        {
+            return itemRequirements.Values.ToArray();
+        }
+
         public void RegisterJobWorkedCallback(Action<Job> jobWorked)
         {
             this.jobWorked += jobWorked;
@@ -180,6 +218,16 @@ namespace org.flaver.model
             this.jobWorked -= jobWorked;
         }
 
+        public void RegisterJobWorkedCallback(string callback)
+        {
+            this.jobWorkedLuaCallback.Add(callback);
+        }
+
+        public void UnregisterJobWorkedCallback(string callback)
+        {
+            this.jobWorkedLuaCallback.Remove(callback);
+        }
+
         public void RegisterJobCompletedCallback(Action<Job> jobCompleted)
         {
             this.jobCompleted += jobCompleted;
@@ -188,6 +236,16 @@ namespace org.flaver.model
         public void UnregisterJobCompletedCallback(Action<Job> jobCompleted)
         {
             this.jobCompleted -= jobCompleted;
+        }
+
+        public void RegisterJobCompletedCallback(string callback)
+        {
+            this.jobCompletedLuaCallback.Add(callback);
+        }
+
+        public void UnregisterJobCompletedCallback(string callback)
+        {
+            this.jobCompletedLuaCallback.Remove(callback);
         }
 
         public void RegisterJobStoppedCallback(Action<Job> jobStopped)

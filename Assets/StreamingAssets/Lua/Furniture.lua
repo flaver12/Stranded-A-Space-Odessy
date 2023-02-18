@@ -122,4 +122,46 @@ function Stockpile_JobWorked(job)
     end
 end
 
+function MiningDroneStation_TickAction(furniture, deltaTime)
+    local tileSpawnSpot = furniture.GetSpawnSpotTile()
+
+    if furniture.JobCount() > 0 then
+        -- Check to see if the Steel plate dest tile is full
+        if tileSpawnSpot.Item ~= nil and tileSpawnSpot.Item.StackSize >= tileSpawnSpot.Item.maxStackSize then
+            -- We can stop now
+            furniture.CancelJobs()
+        end
+        return
+    end
+
+    -- If we get here, the there is no job
+    -- Check if we are full, then we dont need a new one!
+    if tileSpawnSpot.Item ~= nil and tileSpawnSpot.Item.StackSize >= tileSpawnSpot.Item.maxStackSize then
+        return
+    end
+
+    local jobSpot = furniture.GetJobSpotTile()
+    if jobSpot.Item ~= nil and (jobSpot.Item.StackSize >= jobSpot.Item.maxStackSize) then
+        -- Our drop stop is all ready full, dont do anything
+        return
+    end
+
+    local job = Job.__new(
+        furniture.GetJobSpotTile(),
+        nil,
+        nil,
+        1,
+        nil,
+        true
+    )
+
+    job.RegisterJobCompletedCallback("MiningDroneStation_JobCompleted")
+    furniture.AddJob(job)
+end
+
+function MiningDroneStation_JobCompleted(job)
+    local item = Item.__new("Steel Plate", 50, 10)
+    World.Instance.itemManager.InstallItem(job.furniture.GetSpawnSpotTile(), item);
+end
+
 return "LUA parsed! Bitches!"

@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MoonSharp.Interpreter;
 using UnityEngine;
 
 namespace org.flaver.model
 {
+    [MoonSharpUserData]
     public class Item // like stokepile on the floor
     {
         public string objectType = "Steel Plate";

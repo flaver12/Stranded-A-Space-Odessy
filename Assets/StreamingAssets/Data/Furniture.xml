@@ -41,6 +41,11 @@
 
     <Furniture objectType="Stockpile">
         <Name>Stockpile</Name>
+        <Width>1</Width>
+        <Height>1</Height>
+        <MovementCost>1</MovementCost>
+        <LinksToNeighbours>true</LinksToNeighbours>
+        <OnTick functionName="Stockpile_OnTickAction" />
     </Furniture>
 
     <Furniture objectType="Oxygen Generator">
@@ -57,9 +62,14 @@
     </Furniture>
 
     <Furniture objectType="Mining Drone Station">
-        <Name>Mining Drone Station</Name>
+        <Name>Mining Station</Name>
         <MovementCost>1</MovementCost>
         <Width>3</Width>
         <Height>3</Height>
+        
+        <OnTick functionName="MiningDroneStation_TickAction" />
+
+        <JobSpotOffset X="1" Y="0"/>
+        <JobSpawnSpotOffset X="0" Y="0" />
     </Furniture>
 </Furnitures>

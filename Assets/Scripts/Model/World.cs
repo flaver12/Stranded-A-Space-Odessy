@@ -8,9 +8,11 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 using System.IO;
+using MoonSharp.Interpreter;
 
 namespace org.flaver.model
 {
+    [MoonSharpUserData]
     public class World : IXmlSerializable
     {
         public int Width { private set; get; }

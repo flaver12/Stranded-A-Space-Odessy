@@ -15,12 +15,17 @@ namespace org.flaver.model
     {
         public float X {
             get {
+                if(nextTile == null)
+				    return currentTile.X;
                 return Mathf.Lerp(currentTile.X, nextTile.X, movementPercentage);
             }
         }
 
         public float Y {
             get {
+                if(nextTile == null)
+				    return currentTile.Y;
+
                 return Mathf.Lerp(currentTile.Y, nextTile.Y, movementPercentage);
             }
         }
@@ -67,7 +72,7 @@ namespace org.flaver.model
         }
         private Tile nextTile;
         private float movementPercentage; // 0 -> 1 as we move from current to destionation
-        private float speed = 2f; // Tiles per second
+        private float speed = 5f; // Tiles per second
         private Action<Character> changed;
         private Job job;
         private AStar aStar;
@@ -293,6 +298,7 @@ namespace org.flaver.model
             }
 
             destionationTile = job.Tile;
+            Debug.Log(destionationTile);
             job.RegisterJobStoppedCallback(OnJobStopped);
 
             aStar = new AStar(World.Instance, currentTile, destionationTile);

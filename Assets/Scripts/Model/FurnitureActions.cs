@@ -12,6 +12,7 @@ namespace org.flaver.model
         public static FurnitureActions Instance { get; private set; }
 
         private Script luaScript;
+
         public FurnitureActions(string rawLua)
         {
             // Tell Moonsharp load all user data
@@ -19,11 +20,19 @@ namespace org.flaver.model
 
             Instance = this;
             luaScript = new Script();
+
+            // We want to instanciate new objects
+            // Like SomeCall.__new()
+            luaScript.Globals["Item"] = typeof(Item);
+            luaScript.Globals["Job"] = typeof(Job);
+
+            // Enable gloabs/static acces
+            luaScript.Globals["World"] = typeof(World);
             luaScript.DoString(rawLua);
         }
         
 
-        public static void CallFunctionsWithFurnitures(string[] functioNames, Furniture furniture, float deltaTime)
+        public static void CallFunctionsWithFurniture(string[] functioNames, Furniture furniture, float deltaTime)
         {
             foreach (string functionName in functioNames)
             {

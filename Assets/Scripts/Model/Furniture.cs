@@ -189,7 +189,7 @@ namespace org.flaver.model
             if (tickActions != null)
             {
                 //tickActions(this, deltaTime);
-                FurnitureActions.CallFunctionsWithFurnitures(tickActions.ToArray(), this, deltaTime);
+                FurnitureActions.CallFunctionsWithFurniture(tickActions.ToArray(), this, deltaTime);
             }
         }
 
@@ -286,6 +286,18 @@ namespace org.flaver.model
                     case "OnTick":
                         string functionName = reader.GetAttribute("functionName");
                         RegisterTickAction(functionName);
+                        break;
+                    case "JobSpotOffset":
+                        jobSpotOffset = new Vector2(
+                            int.Parse(reader.GetAttribute("X")),
+                            int.Parse(reader.GetAttribute("Y"))
+                        );
+                        break;
+                    case "JobSpawnSpotOffset":
+                        jobSpawnSpotOffset = new Vector2(
+                                int.Parse(reader.GetAttribute("X")),
+                                int.Parse(reader.GetAttribute("Y"))
+                            );
                         break;
                     case "OnIsEnterable":
                         IsEnterableTickAction = reader.GetAttribute("functionName");

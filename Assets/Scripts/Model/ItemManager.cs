@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using MoonSharp.Interpreter;
 using UnityEngine;
 
 namespace org.flaver.model {
+    
+    [MoonSharpUserData]
     public class ItemManager
     {
         public Dictionary<string, List<Item>> Items { get { return items; } }
