@@ -7,13 +7,10 @@ namespace org.flaver.controller {
     public class CharacterSpriteController : MonoBehaviour
     {
         private Dictionary<Character, GameObject> mappedCharacters;
-        private Dictionary<string, Sprite> mappedCharacterSprites;
         private World world { get { return WorldController.Instance.World; } }
 
         private void Start()
-        {
-            LoadSprites();
-                        
+        {               
             // Init map of which tile belongs to which gameobject
             mappedCharacters = new Dictionary<Character, GameObject>();
 
@@ -38,7 +35,7 @@ namespace org.flaver.controller {
 
             characterGameObject.transform.position = new Vector3(character.X, character.Y, 0f);
             characterGameObject.transform.SetParent(transform, true); // true = stay in world pos
-            characterGameObject.AddComponent<SpriteRenderer>().sprite = mappedCharacterSprites["player"];
+            characterGameObject.AddComponent<SpriteRenderer>().sprite = SpriteManager.Instance.GetSprite("Characters","player");
             characterGameObject.GetComponent<SpriteRenderer>().sortingLayerID = SortingLayer.NameToID("Character");
 
             // Object infos changes
@@ -55,19 +52,6 @@ namespace org.flaver.controller {
 
             GameObject characterGameObject = mappedCharacters[character];
             characterGameObject.transform.position = new Vector3(character.X, character.Y, 0);
-        }
-
-        private void LoadSprites()
-        {
-            mappedCharacterSprites = new Dictionary<string, Sprite>();
-            Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Characters");
-
-            Debug.Log("Resources loaded");
-            foreach (Sprite item in sprites)
-            {
-                Debug.Log(item.name);
-                mappedCharacterSprites[item.name] = item;
-            }
         }
     }
 }

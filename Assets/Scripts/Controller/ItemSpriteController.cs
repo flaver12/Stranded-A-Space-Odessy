@@ -10,13 +10,10 @@ namespace org.flaver.controller {
         public GameObject itemUiPrefab;
 
         private Dictionary<Item, GameObject> mappedItems;
-        private Dictionary<string, Sprite> mappedItemSprites;
         private World world { get { return WorldController.Instance.World; } }
 
         private void Start()
-        {
-            LoadSprites();
-                        
+        {               
             // Init map of which tile belongs to which gameobject
             mappedItems = new Dictionary<Item, GameObject>();
 
@@ -45,7 +42,7 @@ namespace org.flaver.controller {
 
             itemGameObject.transform.position = new Vector3(item.tile.X, item.tile.Y, 0f);
             itemGameObject.transform.SetParent(transform, true); // true = stay in world pos
-            itemGameObject.AddComponent<SpriteRenderer>().sprite = mappedItemSprites[item.objectType];
+            itemGameObject.AddComponent<SpriteRenderer>().sprite = SpriteManager.Instance.GetSprite("Items", item.objectType);
             itemGameObject.GetComponent<SpriteRenderer>().sortingLayerID = SortingLayer.NameToID("Items");
 
             if (item.maxStackSize > 1)
@@ -86,19 +83,6 @@ namespace org.flaver.controller {
                 Destroy(itemGameObject);
                 mappedItems.Remove(item);
                 item.UnregisterItemChangedCallback(OnItemChanged);
-            }
-        }
-
-        private void LoadSprites()
-        {
-            mappedItemSprites = new Dictionary<string, Sprite>();
-            Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Items");
-
-            Debug.Log("Resources loaded");
-            foreach (Sprite item in sprites)
-            {
-                Debug.Log(item.name);
-                mappedItemSprites[item.name] = item;
             }
         }
     }

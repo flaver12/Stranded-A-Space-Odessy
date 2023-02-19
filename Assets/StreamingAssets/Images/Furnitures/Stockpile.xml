@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="uft-8"?>
+<Sprites>
+    <Sprite name="Stockpile_" x="32" y="256" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_ES" x="32" y="192" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NE" x="32" y="128" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_EW" x="64" y="192" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_SW" x="96" y="192" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NS" x="96" y="160" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NW" x="96" y="127" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NESW" x="64" y="41" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_ESW" x="224" y="64" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NEW" x="224" y="128" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_E" x="192" y="128" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_N" x="160" y="192" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NES" x="160" y="224" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_W" x="192" y="224" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_S" x="160" y="256" w="32" h="32" pixelPerUnit="32" />
+    <Sprite name="Stockpile_NSW" x="288" y="224" w="32" h="32" pixelPerUnit="32" />
+</Sprites>

@@ -9,13 +9,10 @@ namespace org.flaver.controller
     public class FurnitureSpriteController : MonoBehaviour
     {
         private Dictionary<Furniture, GameObject> mappedFurnitures;
-        private Dictionary<string, Sprite> mappedFurnituresSprites;
         private World world { get { return WorldController.Instance.World; } }
 
         private void Start()
-        {
-            LoadSprites();
-                        
+        {                        
             // Init map of which tile belongs to which gameobject
             mappedFurnitures = new Dictionary<Furniture, GameObject>();
 
@@ -52,7 +49,7 @@ namespace org.flaver.controller
                 Tile nortTile = world.GetTileByPosition(furniture.Tile.X, furniture.Tile.Y + 1);
                 Tile southTile = world.GetTileByPosition(furniture.Tile.X, furniture.Tile.Y - 1);
                 
-                if (nortTile != null && southTile != null && nortTile.Furniture != null && southTile.Furniture != null && nortTile.Furniture.ObjectType == "Wall" && southTile.Furniture.ObjectType == "Wall")
+                if (nortTile != null && southTile != null && nortTile.Furniture != null && southTile.Furniture != null && nortTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
                 {
                     furnitureGameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
                 }
@@ -69,18 +66,13 @@ namespace org.flaver.controller
 
         public Sprite GetSpriteForFurniture(string objectType)
         {
-            if (mappedFurnituresSprites.ContainsKey(objectType))
-            {
-                return mappedFurnituresSprites[objectType];
-            }
+            Sprite sprite = SpriteManager.Instance.GetSprite("Furnitures", objectType);
 
-            if (mappedFurnituresSprites.ContainsKey(objectType + "_"))
+            if (sprite == null)
             {
-                return mappedFurnituresSprites[objectType + "_"];
+                sprite = SpriteManager.Instance.GetSprite("Furnitures", $"{objectType}_");
             }
-
-            Debug.LogError($"Could not find the object type or its base key ${objectType}");
-            return null;
+            return sprite;
         }
 
         public Sprite GetSpriteForFurniture(Furniture furniture)
@@ -109,7 +101,7 @@ namespace org.flaver.controller
                     }
                     
                 }
-                return mappedFurnituresSprites[spriteName];
+                return SpriteManager.Instance.GetSprite("Furnitures", spriteName);
             }
 
             // Load the correct sprite
@@ -145,16 +137,16 @@ namespace org.flaver.controller
                 spriteName = spriteName + "W";
             }
             
+            /*
             if (!mappedFurnituresSprites.ContainsKey(spriteName))
             {
                 Debug.LogError($"Sprite:\"{spriteName}\" does not exist in spritemap");
                 return null;
             }
-
-            
+            */
           
 
-            return mappedFurnituresSprites[spriteName];
+            return SpriteManager.Instance.GetSprite("Furnitures", spriteName);
         }
 
         private void OnFurnitureChanged(Furniture furniture)
@@ -182,19 +174,6 @@ namespace org.flaver.controller
             GameObject furnitureGameObject = mappedFurnitures[furniture];
             Destroy(furnitureGameObject);
             mappedFurnitures.Remove(furniture);
-        }
-
-        private void LoadSprites()
-        {
-            mappedFurnituresSprites = new Dictionary<string, Sprite>();
-            Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furnitures");
-
-            Debug.Log("FurnitureSpriteController: Resources loaded");
-            foreach (Sprite item in sprites)
-            {
-                Debug.Log($"FurnitureSpriteController: {item.name}");
-                mappedFurnituresSprites[item.name] = item;
-            }
         }
 
     }
